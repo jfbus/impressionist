@@ -54,6 +54,10 @@ func parseFilter(code string) (parseFn, error) {
 		return parseResize, nil
 	case "gs":
 		return parseGrayscale, nil
+	case "f":
+		return parseFlip, nil
+	case "r":
+		return parseRotate, nil
 	}
 	return nil, ErrFilterNotFound
 }
@@ -82,6 +86,34 @@ func parseResize(parts []string) (gift.Filter, int, error) {
 
 func parseGrayscale(parts []string) (gift.Filter, int, error) {
 	return gift.Grayscale(), 1, nil
+}
+
+func parseFlip(parts []string) (gift.Filter, int, error) {
+	if len(parts) < 2 {
+		return nil, 1, ErrMissingFilterParameter
+	}
+	switch parts[1] {
+	case "h":
+		return gift.FlipHorizontal(), 2, nil
+	case "v":
+		return gift.FlipVertical(), 2, nil
+	}
+	return nil, 2, ErrBadFilterParameter
+}
+
+func parseRotate(parts []string) (gift.Filter, int, error) {
+	if len(parts) < 2 {
+		return nil, 1, ErrMissingFilterParameter
+	}
+	switch parts[1] {
+	case "90":
+		return gift.Rotate90(), 2, nil
+	case "180":
+		return gift.Rotate180(), 2, nil
+	case "270":
+		return gift.Rotate270(), 2, nil
+	}
+	return nil, 2, ErrBadFilterParameter
 }
 
 func parseRect(str string) (image.Rectangle, error) {

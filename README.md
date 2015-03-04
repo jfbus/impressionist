@@ -55,6 +55,8 @@ Filters
 
 * crop : `c,[x]x[y]-[w]x[h]`
 * resize : `s,[w]x[h]` if w or h is zero, image is resized to the other dimension, keeping the same ratio
+* flip : `f,[h|v]` horizontal or vertical flip
+* rotate: `r,[90|180|270]` rotate
 * grayscale: `gs`
 
 Predefined filters can be configured.
