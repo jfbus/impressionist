@@ -58,6 +58,7 @@ Filters
 * flip : `f,[h|v]` h = horizontal, v = vertical 
 * rotate: `r,[90|180|270]`
 * grayscale: `gs`
+* blur: `b,s` s = float (e.g: 1.0)
 
 Predefined filters can be configured.
 

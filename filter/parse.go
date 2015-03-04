@@ -58,6 +58,8 @@ func parseFilter(code string) (parseFn, error) {
 		return parseFlip, nil
 	case "r":
 		return parseRotate, nil
+	case "b":
+		return parseBlur, nil
 	}
 	return nil, ErrFilterNotFound
 }
@@ -114,6 +116,17 @@ func parseRotate(parts []string) (gift.Filter, int, error) {
 		return gift.Rotate270(), 2, nil
 	}
 	return nil, 2, ErrBadFilterParameter
+}
+
+func parseBlur(parts []string) (gift.Filter, int, error) {
+	if len(parts) < 2 {
+		return nil, 1, ErrMissingFilterParameter
+	}
+	s, err := strconv.ParseFloat(parts[1], 32)
+	if err != nil {
+		return nil, 2, ErrBadFilterParameter
+	}
+	return gift.GaussianBlur(float32(s)), 2, nil
 }
 
 func parseRect(str string) (image.Rectangle, error) {
