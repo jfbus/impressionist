@@ -18,5 +18,8 @@
 			"type": "local",
 			"path": "/tmp"
 		}
-	]
+	],
+	"caches": {
+		"source": 1000
+	}
 }

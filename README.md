@@ -31,7 +31,10 @@ Example configuration file :
 			"type": "local",
 			"path": "/tmp"
 		}
-	]
+	],
+	"caches": {
+		"source": 100
+	},
 }
 ```
 
@@ -82,6 +85,13 @@ Formats
 
 * PNG: `png`,
 * JPEG: `jpeg[,quality]` - if not specified, quality is set to the default value (`jpeg.quality` config variable, or 80 if not configured).
+
+Caching
+-------
+
+A in-memory cache is available. It stores source files to avoid accessing filesystem for each access.
+
+By default, it caches 100 entries, and cache size can be changed by setting `caches.source`. A -1 value disables the cache.
 
 TODO
 ----

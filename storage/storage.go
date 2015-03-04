@@ -12,7 +12,7 @@ var (
 	ErrStorageNotFound = errors.New("storage not found")
 )
 
-func Init(cfg []config.StorageConfig) {
+func Init(cfg []config.StorageConfig, cacheSize int) {
 	for _, s := range cfg {
 		switch s.Type {
 		case "local":
@@ -21,6 +21,7 @@ func Init(cfg []config.StorageConfig) {
 			panic("no such type " + s.Type)
 		}
 	}
+	InitCache(cacheSize)
 }
 
 func Get(name string) (gostorages.Storage, error) {

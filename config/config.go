@@ -27,11 +27,16 @@ type StorageConfig struct {
 	Path string `json:"path"`
 }
 
+type CacheConfig struct {
+	Source int `json:"source"`
+}
+
 type Config struct {
 	Http     HttpConfig      `json:"http"`
 	Filters  []FilterConfig  `json:"filters"`
 	JPEG     JPEGConfig      `json:"jpeg"`
 	Storages []StorageConfig `json:"storages"`
+	Cache    CacheConfig     `json:"caches"`
 }
 
 var defaults = Config{
@@ -41,6 +46,9 @@ var defaults = Config{
 	},
 	JPEG: JPEGConfig{
 		Quality: 80,
+	},
+	Cache: CacheConfig{
+		Source: 100,
 	},
 }
 
