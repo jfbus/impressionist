@@ -12,20 +12,25 @@ type HttpConfig struct {
 	Root string `json:"root"`
 }
 
+type FilterConfig struct {
+	Name       string `json:"name"`
+	Definition string `json:"definition"`
+}
+
+type JPEGConfig struct {
+	Quality int `json:"quality"`
+}
+
 type StorageConfig struct {
 	Name string `json:"name"`
 	Type string `json:"type"`
 	Path string `json:"path"`
 }
 
-type FilterConfig struct {
-	Name       string `json:"name"`
-	Definition string `json:"definition"`
-}
-
 type Config struct {
 	Http     HttpConfig      `json:"http"`
 	Filters  []FilterConfig  `json:"filters"`
+	JPEG     JPEGConfig      `json:"jpeg"`
 	Storages []StorageConfig `json:"storages"`
 }
 
@@ -33,6 +38,9 @@ var defaults = Config{
 	Http: HttpConfig{
 		Port: 80,
 		Root: "/impressionist",
+	},
+	JPEG: JPEGConfig{
+		Quality: 80,
 	},
 }
 

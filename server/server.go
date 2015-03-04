@@ -11,6 +11,7 @@ import (
 	"github.com/jfbus/impressionist/config"
 	"github.com/jfbus/impressionist/filter"
 	"github.com/jfbus/impressionist/handler"
+	"github.com/jfbus/impressionist/output"
 	"github.com/jfbus/impressionist/storage"
 )
 
@@ -21,6 +22,7 @@ func main() {
 	cfg := config.Load(*file)
 	storage.Init(cfg.Storages)
 	filter.Init(cfg.Filters)
+	output.Init(cfg.JPEG)
 	runtime.GOMAXPROCS(runtime.NumCPU())
 
 	m := pat.New()

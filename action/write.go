@@ -2,16 +2,15 @@ package action
 
 import (
 	"image"
-	"image/jpeg"
-	"image/png"
 	"net/http"
+
+	"github.com/jfbus/impressionist/output"
 )
 
 type WritePNG struct{}
 
 func (p *WritePNG) Apply(i image.Image, w http.ResponseWriter) (image.Image, error) {
-	w.Header().Set("Content-Type", "image/png")
-	return nil, png.Encode(w, i)
+	return nil, output.WriteHttpPNG(i, w)
 }
 
 type WriteJPEG struct {
@@ -19,6 +18,5 @@ type WriteJPEG struct {
 }
 
 func (j *WriteJPEG) Apply(i image.Image, w http.ResponseWriter) (image.Image, error) {
-	w.Header().Set("Content-Type", "image/jpeg")
-	return nil, jpeg.Encode(w, i, &jpeg.Options{j.Quality})
+	return nil, output.WriteHttpJPEG(i, w, j.Quality)
 }

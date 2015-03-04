@@ -22,6 +22,9 @@ Example configuration file :
 			"definition": "s,100x0"
 		}
 	],
+	"jpeg": {
+		"quality": 90
+	},
 	"storages": [
 		{
 			"name": "local",
@@ -63,7 +66,7 @@ With the following configuration :
 	"filters": [
 		{
 			"name": "small",
-			"defiition": "s,100x0"
+			"definition": "s,100x0"
 		}
 	]
 }
@@ -75,7 +78,7 @@ Formats
 -------
 
 * PNG: `png`,
-* JPEG: `jpeg[,quality]` - if not specified, quality is set to 80.
+* JPEG: `jpeg[,quality]` - if not specified, quality is set to the default value (`jpeg.quality` config variable, or 80 if not configured).
 
 TODO
 ----

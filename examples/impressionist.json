@@ -9,6 +9,9 @@
 			"definition": "s,100x0,c,0x0-100x100"
 		}
 	],
+	"jpeg": {
+		"quality": 90
+	},
 	"storages": [
 		{
 			"name": "local",

@@ -23,13 +23,13 @@ func Build(q url.Values, url string) (ActionChain, error) {
 	case "png":
 		w = &WritePNG{}
 	case "jpeg":
-		q := 80
+		q := 0
 		if len(fmt) > 1 {
 			qq, err := strconv.ParseInt(fmt[1], 10, 32)
 			if err == nil {
 				q = int(qq)
 			} else {
-				log.Infof("JPEG quality %s is not number, ignored", qq)
+				log.Infof("JPEG quality %s is not a number, using default", fmt[1])
 			}
 		}
 		w = &WriteJPEG{q}
