@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/jfbus/impressionist/action"
+	"github.com/jfbus/impressionist/storage"
 )
 
 func Display(w http.ResponseWriter, req *http.Request) {
@@ -13,7 +14,16 @@ func Display(w http.ResponseWriter, req *http.Request) {
 		err = c.Apply(w)
 	}
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
+		switch err {
+		case storage.ErrStorageNotFound:
+			w.WriteHeader(http.StatusNotFound)
+		case storage.ErrFileNotFound:
+			w.WriteHeader(http.StatusNotFound)
+		case storage.ErrAccessDenied:
+			w.WriteHeader(http.StatusForbidden)
+		default:
+			w.WriteHeader(http.StatusBadRequest)
+		}
 		w.Write([]byte(fmt.Sprintf("%s", err)))
 	}
 }

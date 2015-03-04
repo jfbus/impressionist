@@ -92,9 +92,9 @@ This is a first draft, everything is still pretty rough
 * Clean stuff
 * Tuning
 * Add context & nice logs
-* Move image manipulation to separate goroutines
-* Add more storage types (eg: AWS)
-* Support environment variables for tokens
+* Move image manipulation to a pool of goroutines
+* Add more storage types (eg: AWS, http)
+* Support environment variables for configuration tokens
 * Add more filters
 * Cache resized images
 * Secure URL using hashes
