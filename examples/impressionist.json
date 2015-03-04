@@ -1,0 +1,19 @@
+{
+	"http": {
+		"port": 8842,
+		"root": "/impressionist"
+	},
+	"filters": [
+		{
+			"name": "small",
+			"definition": "s,100x0,c,0x0-100x100"
+		}
+	],
+	"storages": [
+		{
+			"name": "local",
+			"type": "local",
+			"path": "/tmp"
+		}
+	]
+}
