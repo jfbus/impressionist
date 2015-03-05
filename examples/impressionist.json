@@ -1,7 +1,8 @@
 {
 	"http": {
 		"port": 8842,
-		"root": "/impressionist"
+		"root": "/impressionist",
+		"timeout": "10s"
 	},
 	"filters": [
 		{

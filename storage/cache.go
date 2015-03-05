@@ -3,7 +3,7 @@ package storage
 import (
 	"image"
 
-	log "github.com/Sirupsen/logrus"
+	"github.com/jfbus/impressionist/log"
 	"github.com/thoas/gokvstores"
 )
 

@@ -7,21 +7,24 @@ import (
 	"strconv"
 	"strings"
 
-	log "github.com/Sirupsen/logrus"
+	"golang.org/x/net/context"
 
+	"github.com/jfbus/impressionist/config"
 	"github.com/jfbus/impressionist/filter"
+	"github.com/jfbus/impressionist/log"
+	"github.com/jfbus/impressionist/output"
 )
 
 var (
 	ErrBadAction = errors.New("bad action url")
 )
 
-func Build(q url.Values, url string) (ActionChain, error) {
-	var w Action
+func Build(ctx context.Context, q url.Values, url string) (ActionChain, output.Writer, error) {
+	var w output.Writer
 	fmt := strings.Split(q.Get(":format"), ",")
 	switch fmt[0] {
 	case "png":
-		w = &WritePNG{}
+		w = &output.PNGWriter{}
 	case "jpeg":
 		q := 0
 		if len(fmt) > 1 {
@@ -29,17 +32,21 @@ func Build(q url.Values, url string) (ActionChain, error) {
 			if err == nil {
 				q = int(qq)
 			} else {
-				log.Infof("JPEG quality %s is not a number, using default", fmt[1])
+				log.WithContext(ctx).Infof("JPEG quality %s is not a number, using default", fmt[1])
+			}
+			if q <= 0 || q > 100 {
+				cfg := config.Get()
+				q = cfg.JPEG.Quality
 			}
 		}
-		w = &WriteJPEG{q}
+		w = &output.JPEGWriter{q}
 	default:
-		log.Warnf("unknown format %s", q.Get(":format"))
-		return nil, ErrBadAction
+		log.WithContext(ctx).Warnf("unknown format %s", q.Get(":format"))
+		return nil, nil, ErrBadAction
 	}
 	f, err := filter.Parse(q.Get(":filter"))
 	if err != nil {
-		return nil, ErrBadAction
+		return nil, nil, ErrBadAction
 	}
 	parts := strings.Split(url, "/")
 	p := ""
@@ -49,8 +56,8 @@ func Build(q url.Values, url string) (ActionChain, error) {
 		}
 	}
 	if p == "" {
-		log.Warn("missing path")
-		return nil, ErrBadAction
+		log.WithContext(ctx).Warn("missing path")
+		return nil, nil, ErrBadAction
 	}
 	return ActionChain{
 		&Read{
@@ -58,6 +65,5 @@ func Build(q url.Values, url string) (ActionChain, error) {
 			File:    p,
 		},
 		&Filter{f},
-		w,
-	}, nil
+	}, w, nil
 }

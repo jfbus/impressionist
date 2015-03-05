@@ -14,7 +14,9 @@ Example configuration file :
 {
 	"http": {
 		"port": 80,
-		"root": "/impressionist"
+		"root": "/impressionist",
+		"timeout" "30s",
+		"workers": 10
 	},
 	"filters": [
 		{
@@ -34,7 +36,7 @@ Example configuration file :
 	],
 	"caches": {
 		"source": 100
-	},
+	}
 }
 ```
 
@@ -93,6 +95,11 @@ A in-memory cache is available. It stores source files to avoid accessing filesy
 
 By default, it caches 100 entries, and cache size can be changed by setting `caches.source`. A -1 value disables the cache.
 
+Workers
+-------
+
+Image manipulation is delegated to a pool of workers. If a request is not finished within the configured timeout (`http.timeout`, by default, 30s), the request returns a 503 error.
+
 TODO
 ----
 
@@ -101,8 +108,6 @@ This is a first draft, everything is still pretty rough
 * Tests, tests & tests
 * Clean stuff
 * Tuning
-* Add context & nice logs
-* Move image manipulation to a pool of goroutines
 * Add more storage types (eg: AWS, http)
 * Support environment variables for configuration tokens
 * Add more filters

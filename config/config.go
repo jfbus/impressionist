@@ -3,13 +3,18 @@ package config
 import (
 	"encoding/json"
 	"os"
+	"time"
 
+	log "github.com/Sirupsen/logrus"
 	"github.com/imdario/mergo"
 )
 
 type HttpConfig struct {
-	Port int    `json:"port"`
-	Root string `json:"root"`
+	Port       int           `json:"port"`
+	Root       string        `json:"root"`
+	TimeOutStr string        `json:"timeout"`
+	TimeOut    time.Duration `json:"-"`
+	Workers    int           `json:"workers"`
 }
 
 type FilterConfig struct {
@@ -39,10 +44,12 @@ type Config struct {
 	Cache    CacheConfig     `json:"caches"`
 }
 
-var defaults = Config{
+var cfg = &Config{
 	Http: HttpConfig{
-		Port: 80,
-		Root: "/impressionist",
+		Port:    80,
+		Root:    "/impressionist",
+		TimeOut: 30 * time.Second,
+		Workers: 10,
 	},
 	JPEG: JPEGConfig{
 		Quality: 80,
@@ -63,12 +70,18 @@ func Load(file string) *Config {
 	if err != nil {
 		panic(err)
 	}
-	cfg := Config{}
-	if err := mergo.Merge(&cfg, defaults); err != nil {
+	if user.Http.TimeOutStr != "" {
+		user.Http.TimeOut, err = time.ParseDuration(user.Http.TimeOutStr)
+		if err != nil {
+			log.Warnf("Invalid timeout : %s, ignoring", user.Http.TimeOutStr)
+		}
+	}
+	if err := mergo.Merge(cfg, user); err != nil {
 		panic(err)
 	}
-	if err := mergo.Merge(&cfg, user); err != nil {
-		panic(err)
-	}
-	return &cfg
+	return cfg
+}
+
+func Get() *Config {
+	return cfg
 }
