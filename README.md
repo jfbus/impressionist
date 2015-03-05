@@ -5,6 +5,16 @@ A flexible image server written in go, using chained image filters.
 
 Status: dev, things might be broken or will be broken
 
+Building the server :
+```
+go build -o impressionist server/server.go
+```
+
+Running the server :
+```
+impressionist -cfg impressionist.json [-debug]
+```
+
 Configuration
 -------------
 
@@ -15,7 +25,7 @@ Example configuration file :
 	"http": {
 		"port": 80,
 		"root": "/impressionist",
-		"timeout" "30s",
+		"timeout": "30s",
 		"workers": 10
 	},
 	"filters": [
