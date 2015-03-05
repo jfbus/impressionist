@@ -4,7 +4,6 @@ import (
 	"errors"
 	"image"
 	"os"
-	"syscall"
 
 	log "github.com/Sirupsen/logrus"
 )
@@ -24,10 +23,10 @@ func Read(storage, file string) (image.Image, error) {
 	fd, err := s.Open(file)
 	if err != nil {
 		log.Warn(err.(*os.PathError).Error())
-		switch err.(*os.PathError).Err {
-		case syscall.ENOENT:
+		if os.IsNotExist(err) {
 			return nil, ErrFileNotFound
-		case syscall.EPERM:
+		}
+		if os.IsPermission(err) {
 			return nil, ErrAccessDenied
 		}
 		return nil, err.(*os.PathError).Err
