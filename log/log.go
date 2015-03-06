@@ -8,7 +8,9 @@ import (
 var logger = logrus.New()
 
 func Init(debug bool) {
-	logrus.SetLevel(logrus.DebugLevel)
+	if debug {
+		logrus.SetLevel(logrus.DebugLevel)
+	}
 }
 
 func WithContext(ctx context.Context) *logrus.Entry {
