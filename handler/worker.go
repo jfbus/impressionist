@@ -4,6 +4,7 @@ import (
 	"image"
 
 	"github.com/jfbus/impressionist/action"
+	ctxt "github.com/jfbus/impressionist/context"
 	"github.com/jfbus/impressionist/log"
 	"golang.org/x/net/context"
 )
@@ -30,8 +31,7 @@ func InitWorkers(n int) {
 }
 
 func work(queue chan Job) {
-	for {
-		j := <-queue
+	for j := range queue {
 		i, err := j.ActionChain.Apply(j.Ctx)
 		j.res <- JobResponse{i, err}
 	}
@@ -39,7 +39,11 @@ func work(queue chan Job) {
 
 func Work(j Job) (image.Image, error) {
 	j.res = make(chan JobResponse)
-	queue <- j
+	select {
+	case <-j.Ctx.Done():
+		return nil, ctxt.ErrTimeout
+	case queue <- j:
+	}
 	r := <-j.res
 	return r.i, r.err
 }
