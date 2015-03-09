@@ -1,22 +1,22 @@
-package handler
+package request
 
 import (
-	"image"
-
-	"github.com/jfbus/impressionist/action"
 	ctxt "github.com/jfbus/impressionist/context"
+	"github.com/jfbus/impressionist/filter"
+	"github.com/jfbus/impressionist/img"
 	"github.com/jfbus/impressionist/log"
 	"golang.org/x/net/context"
 )
 
 type Job struct {
 	Ctx         context.Context
-	ActionChain action.ActionChain
+	Image       img.Img
+	FilterChain filter.Chain
 	res         chan JobResponse
 }
 
 type JobResponse struct {
-	i   image.Image
+	i   img.Img
 	err error
 }
 
@@ -32,12 +32,12 @@ func InitWorkers(n int) {
 
 func work(queue chan Job) {
 	for j := range queue {
-		i, err := j.ActionChain.Apply(j.Ctx)
+		i, err := j.FilterChain.Apply(j.Ctx, j.Image)
 		j.res <- JobResponse{i, err}
 	}
 }
 
-func Work(j Job) (image.Image, error) {
+func Work(j Job) (img.Img, error) {
 	j.res = make(chan JobResponse)
 	select {
 	case <-j.Ctx.Done():

@@ -22,7 +22,7 @@ type FilterConfig struct {
 	Definition string `json:"definition"`
 }
 
-type JPEGConfig struct {
+type ImageConfig struct {
 	Quality int `json:"quality"`
 }
 
@@ -39,7 +39,7 @@ type CacheConfig struct {
 type Config struct {
 	Http     HttpConfig      `json:"http"`
 	Filters  []FilterConfig  `json:"filters"`
-	JPEG     JPEGConfig      `json:"jpeg"`
+	Image    ImageConfig     `json:"image"`
 	Storages []StorageConfig `json:"storages"`
 	Cache    CacheConfig     `json:"caches"`
 }
@@ -51,8 +51,8 @@ var cfg = &Config{
 		TimeOut: 30 * time.Second,
 		Workers: 10,
 	},
-	JPEG: JPEGConfig{
-		Quality: 80,
+	Image: ImageConfig{
+		Quality: 75,
 	},
 	Cache: CacheConfig{
 		Source: 100,

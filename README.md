@@ -7,7 +7,7 @@ Status: dev, things might be broken or will be broken
 
 Building the server :
 ```
-go build -o impressionist server/server.go
+go build -o impressionist server/pure/server.go
 ```
 
 Running the server :
@@ -34,7 +34,7 @@ Example configuration file :
 			"definition": "s,100x0"
 		}
 	],
-	"jpeg": {
+	"image": {
 		"quality": 90
 	},
 	"storages": [
@@ -96,7 +96,7 @@ Formats
 -------
 
 * PNG: `png`,
-* JPEG: `jpeg[,quality]` - if not specified, quality is set to the default value (`jpeg.quality` config variable, or 80 if not configured).
+* JPEG: `jpeg[,quality]` - if not specified, quality is set to the default value (`image.quality` config variable, or 75 if not configured).
 
 Caching
 -------
@@ -128,6 +128,7 @@ This is a first draft, everything is still pretty rough
 * Format negociation & webp
 * Graceful restart & configuration reloading
 * Metrics
+* ImageMagick provider
 
 LICENSE
 -------

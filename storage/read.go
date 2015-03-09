@@ -2,16 +2,17 @@ package storage
 
 import (
 	"errors"
-	"image"
 	"os"
 
 	log "github.com/Sirupsen/logrus"
+	"github.com/jfbus/impressionist/img"
+	"github.com/jfbus/impressionist/provider"
 )
 
 var ErrFileNotFound = errors.New("file not found")
 var ErrAccessDenied = errors.New("access denied")
 
-func Read(storage, file string) (image.Image, error) {
+func Read(storage, file string) (img.Img, error) {
 	if cached, found := getFromCache(storage, file); found {
 		log.Debug("reading source file from cache")
 		return cached, nil
@@ -31,7 +32,7 @@ func Read(storage, file string) (image.Image, error) {
 		}
 		return nil, err.(*os.PathError).Err
 	}
-	i, _, err := image.Decode(fd)
+	i, err := provider.Decode(fd)
 	fd.Close()
 	if err == nil {
 		setToCache(storage, file, i)

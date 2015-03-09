@@ -2,13 +2,11 @@ package filter
 
 import (
 	"errors"
-	"image"
 	"strconv"
 	"strings"
 
 	log "github.com/Sirupsen/logrus"
-
-	"github.com/disintegration/gift"
+	"golang.org/x/net/context"
 )
 
 var (
@@ -17,136 +15,53 @@ var (
 	ErrMissingFilterParameter = errors.New("missing filter parameter")
 )
 
-type parseFn func([]string) (gift.Filter, int, error)
+type FilterBuilder func(parts []string) (Filter, int, error)
 
-func Parse(str string) (*gift.GIFT, error) {
+func Parse(ctx context.Context, m map[string]FilterBuilder, str string) (Chain, error) {
 	// predefined filter
-	g := predefined(str)
-	if g != nil {
-		return g, nil
+	c := predefined(str)
+	if c != nil {
+		return c, nil
 	}
 	// parse filter
-	g = gift.New()
+	c = Chain{}
 	parts := strings.Split(str, ",")
 	for {
-		fn, err := parseFilter(parts[0])
-		if err != nil {
-			return nil, err
+		fn, found := m[parts[0]]
+		if !found {
+			return nil, ErrFilterNotFound
 		}
 		f, adv, err := fn(parts)
 		if err != nil {
 			return nil, err
 		}
-		g.Add(f)
+		c = append(c, f)
 		if len(parts) <= adv {
 			break
 		}
 		parts = parts[adv:]
 	}
-	return g, nil
+	return c, nil
 }
 
-func parseFilter(code string) (parseFn, error) {
-	switch code {
-	case "c":
-		return parseCrop, nil
-	case "s":
-		return parseResize, nil
-	case "gs":
-		return parseGrayscale, nil
-	case "f":
-		return parseFlip, nil
-	case "r":
-		return parseRotate, nil
-	case "b":
-		return parseBlur, nil
-	}
-	return nil, ErrFilterNotFound
-}
-
-func parseCrop(parts []string) (gift.Filter, int, error) {
-	if len(parts) < 2 {
-		return nil, 1, ErrMissingFilterParameter
-	}
-	r, err := parseRect(parts[1])
-	if err != nil {
-		return nil, 2, err
-	}
-	return gift.Crop(r), 2, nil
-}
-
-func parseResize(parts []string) (gift.Filter, int, error) {
-	if len(parts) < 2 {
-		return nil, 1, ErrMissingFilterParameter
-	}
-	w, h, err := parseDimensions(parts[1])
-	if err != nil {
-		return nil, 2, err
-	}
-	return gift.Resize(w, h, gift.LanczosResampling), 2, nil
-}
-
-func parseGrayscale(parts []string) (gift.Filter, int, error) {
-	return gift.Grayscale(), 1, nil
-}
-
-func parseFlip(parts []string) (gift.Filter, int, error) {
-	if len(parts) < 2 {
-		return nil, 1, ErrMissingFilterParameter
-	}
-	switch parts[1] {
-	case "h":
-		return gift.FlipHorizontal(), 2, nil
-	case "v":
-		return gift.FlipVertical(), 2, nil
-	}
-	return nil, 2, ErrBadFilterParameter
-}
-
-func parseRotate(parts []string) (gift.Filter, int, error) {
-	if len(parts) < 2 {
-		return nil, 1, ErrMissingFilterParameter
-	}
-	switch parts[1] {
-	case "90":
-		return gift.Rotate90(), 2, nil
-	case "180":
-		return gift.Rotate180(), 2, nil
-	case "270":
-		return gift.Rotate270(), 2, nil
-	}
-	return nil, 2, ErrBadFilterParameter
-}
-
-func parseBlur(parts []string) (gift.Filter, int, error) {
-	if len(parts) < 2 {
-		return nil, 1, ErrMissingFilterParameter
-	}
-	s, err := strconv.ParseFloat(parts[1], 32)
-	if err != nil {
-		return nil, 2, ErrBadFilterParameter
-	}
-	return gift.GaussianBlur(float32(s)), 2, nil
-}
-
-func parseRect(str string) (image.Rectangle, error) {
+func ParseRect(str string) (int, int, int, int, error) {
 	parts := strings.Split(str, "-")
 	if len(parts) != 2 {
 		log.Warnf("Unable to parse rectangle %s", str)
-		return image.Rectangle{}, ErrBadFilterParameter
+		return 0, 0, 0, 0, ErrBadFilterParameter
 	}
-	x, y, err := parseDimensions(parts[0])
+	x, y, err := ParseDimensions(parts[0])
 	if err != nil {
-		return image.Rectangle{}, ErrBadFilterParameter
+		return 0, 0, 0, 0, ErrBadFilterParameter
 	}
-	w, h, err := parseDimensions(parts[1])
+	w, h, err := ParseDimensions(parts[1])
 	if err != nil {
-		return image.Rectangle{}, ErrBadFilterParameter
+		return 0, 0, 0, 0, ErrBadFilterParameter
 	}
-	return image.Rect(x, y, x+w, y+h), nil
+	return x, y, w, h, nil
 }
 
-func parseDimensions(str string) (int, int, error) {
+func ParseDimensions(str string) (int, int, error) {
 	parts := strings.Split(str, "x")
 	if len(parts) != 2 {
 		log.Warnf("Unable to parse dimensions %s", str)
