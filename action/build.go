@@ -34,10 +34,10 @@ func Build(ctx context.Context, q url.Values, url string) (ActionChain, output.W
 			} else {
 				log.WithContext(ctx).Infof("JPEG quality %s is not a number, using default", fmt[1])
 			}
-			if q <= 0 || q > 100 {
-				cfg := config.Get()
-				q = cfg.JPEG.Quality
-			}
+		}
+		if q <= 0 || q > 100 {
+			cfg := config.Get()
+			q = cfg.JPEG.Quality
 		}
 		w = &output.JPEGWriter{q}
 	default:
