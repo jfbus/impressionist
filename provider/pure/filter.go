@@ -1,7 +1,6 @@
 package pure
 
 import (
-	"errors"
 	"image"
 	"strconv"
 
@@ -9,12 +8,6 @@ import (
 	"github.com/jfbus/impressionist/img"
 
 	"github.com/disintegration/imaging"
-)
-
-var (
-	ErrFilterNotFound         = errors.New("filter not found")
-	ErrBadFilterParameter     = errors.New("bad filter parameter")
-	ErrMissingFilterParameter = errors.New("missing filter parameter")
 )
 
 type Crop struct {
@@ -27,7 +20,7 @@ func (c *Crop) Apply(i img.Img) (img.Img, error) {
 
 func CropBuilder(parts []string) (filter.Filter, int, error) {
 	if len(parts) < 2 {
-		return nil, 1, ErrMissingFilterParameter
+		return nil, 1, filter.ErrMissingFilterParameter
 	}
 	x, y, w, h, err := filter.ParseRect(parts[1])
 	if err != nil {
@@ -46,7 +39,7 @@ func (r *Resize) Apply(i img.Img) (img.Img, error) {
 
 func ResizeBuilder(parts []string) (filter.Filter, int, error) {
 	if len(parts) < 2 {
-		return nil, 1, ErrMissingFilterParameter
+		return nil, 1, filter.ErrMissingFilterParameter
 	}
 	w, h, err := filter.ParseDimensions(parts[1])
 	if err != nil {
@@ -69,7 +62,7 @@ func GrayscaleBuilder(parts []string) (filter.Filter, int, error) {
 
 func FlipBuilder(parts []string) (filter.Filter, int, error) {
 	if len(parts) < 2 {
-		return nil, 1, ErrMissingFilterParameter
+		return nil, 1, filter.ErrMissingFilterParameter
 	}
 	switch parts[1] {
 	case "h":
@@ -77,12 +70,12 @@ func FlipBuilder(parts []string) (filter.Filter, int, error) {
 	case "v":
 		return &Apply{imaging.FlipV}, 2, nil
 	}
-	return nil, 2, ErrBadFilterParameter
+	return nil, 2, filter.ErrBadFilterParameter
 }
 
 func RotateBuilder(parts []string) (filter.Filter, int, error) {
 	if len(parts) < 2 {
-		return nil, 1, ErrMissingFilterParameter
+		return nil, 1, filter.ErrMissingFilterParameter
 	}
 	switch parts[1] {
 	case "90":
@@ -92,7 +85,7 @@ func RotateBuilder(parts []string) (filter.Filter, int, error) {
 	case "270":
 		return &Apply{imaging.Rotate270}, 2, nil
 	}
-	return nil, 2, ErrBadFilterParameter
+	return nil, 2, filter.ErrBadFilterParameter
 }
 
 type Blur struct {
@@ -105,11 +98,11 @@ func (b *Blur) Apply(i img.Img) (img.Img, error) {
 
 func BlurBuilder(parts []string) (filter.Filter, int, error) {
 	if len(parts) < 2 {
-		return nil, 1, ErrMissingFilterParameter
+		return nil, 1, filter.ErrMissingFilterParameter
 	}
 	s, err := strconv.ParseFloat(parts[1], 32)
 	if err != nil {
-		return nil, 2, ErrBadFilterParameter
+		return nil, 2, filter.ErrBadFilterParameter
 	}
 	return &Blur{s}, 2, nil
 }
