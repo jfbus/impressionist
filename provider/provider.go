@@ -12,7 +12,6 @@ type Writer interface {
 }
 
 type Provider interface {
-	Image() img.Img
 	Decode(r io.Reader) (img.Img, error)
 	FilterMap() map[string]filter.FilterBuilder
 	WriterMap() map[string]Writer

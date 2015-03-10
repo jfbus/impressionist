@@ -9,12 +9,7 @@ import (
 	"github.com/jfbus/impressionist/provider"
 )
 
-type Provider struct {
-}
-
-func (p *Provider) Image() img.Img {
-	return image.Image(nil)
-}
+type Provider struct{}
 
 func (p *Provider) Decode(r io.Reader) (img.Img, error) {
 	i, _, err := image.Decode(r)
