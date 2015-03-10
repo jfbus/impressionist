@@ -5,6 +5,8 @@ A flexible image server written in go, using chained image filters.
 
 Status: dev, things might be broken or will be broken
 
+*impressionist is being refactored to add an optional support of ImageMagick - see the imagick branch*
+
 Building the server :
 ```
 go build -o impressionist server/server.go
