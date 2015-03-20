@@ -89,10 +89,10 @@ Filters
 
 Note on resize :
 
-* s,500x100 resizes exactly to 500x100
-* s,500x0 and s,0x100 resize to a width of 500px (height of 100px), keeping the ratio
-* s,500x100+ resizes to the maximum size within the specified dimensions, keeping the ratio
-* s,500x100- resizes to the minimum dimention above the specified dimensions, keeping the ratio, and crops to 500x100
+* `s,500x100` resizes exactly to 500x100
+* `s,500x0` and `s,0x100` resize to a width of 500px (height of 100px), keeping the ratio
+* `s,500x100+` resizes to the maximum size within the specified dimensions, keeping the ratio
+* `s,500x100-` resizes to the minimum dimention above the specified dimensions, keeping the ratio, and crops to 500x100
 
 Predefined filters can be configured.
 
@@ -113,7 +113,7 @@ With the following configuration :
 
 Filters supported by each backend :
 
-|Filter|pure Go|Magick|
+|filter|pure Go|magick|
 |------|-------|------|
 |crop|yes|yes|
 |resize|yes|yes|
@@ -159,7 +159,6 @@ This is a first draft, everything is still pretty rough
 * Format negociation & webp
 * Graceful restart & configuration reloading
 * Metrics
-* ImageMagick provider
 
 LICENSE
 -------
