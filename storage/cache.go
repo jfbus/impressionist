@@ -1,8 +1,7 @@
 package storage
 
 import (
-	"image"
-
+	"github.com/jfbus/impressionist/img"
 	"github.com/jfbus/impressionist/log"
 	"github.com/thoas/gokvstores"
 )
@@ -22,7 +21,7 @@ func getCacheKey(storage, file string) string {
 	return storage + "##" + file
 }
 
-func getFromCache(storage, file string) (image.Image, bool) {
+func getFromCache(storage, file string) (img.Img, bool) {
 	if cache == nil {
 		return nil, false
 	}
@@ -30,11 +29,11 @@ func getFromCache(storage, file string) (image.Image, bool) {
 	if !cache.Exists(k) {
 		return nil, false
 	}
-	i, ok := cache.Get(k).(image.Image)
+	i, ok := cache.Get(k).(img.Img)
 	return i, ok
 }
 
-func setToCache(storage, file string, i image.Image) {
+func setToCache(storage, file string, i img.Img) {
 	if cache != nil {
 		cache.Set(getCacheKey(storage, file), i)
 	}

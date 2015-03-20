@@ -10,10 +10,13 @@ import (
 	"github.com/codegangsta/negroni"
 	"github.com/jfbus/impressionist/config"
 	"github.com/jfbus/impressionist/filter"
-	"github.com/jfbus/impressionist/handler"
 	"github.com/jfbus/impressionist/log"
+	"github.com/jfbus/impressionist/provider"
+	"github.com/jfbus/impressionist/provider/pure"
+	"github.com/jfbus/impressionist/request"
 	"github.com/jfbus/impressionist/storage"
 	"github.com/pilu/xrequestid"
+	"golang.org/x/net/context"
 )
 
 func main() {
@@ -23,17 +26,19 @@ func main() {
 	flag.Parse()
 
 	cfg := config.Load(*file)
+	ctx := context.Background()
+	provider.Set(&pure.Provider{})
 	storage.Init(cfg.Storages, cfg.Cache.Source)
-	filter.Init(cfg.Filters)
-	handler.InitWorkers(cfg.Http.Workers)
+	filter.Init(ctx, cfg.Filters, provider.GetFilterMap())
+	request.InitWorkers(cfg.Http.Workers)
 	log.Init(*debug)
 
 	runtime.GOMAXPROCS(runtime.NumCPU())
 
 	m := pat.New()
-	m.Get(cfg.Http.Root+"/:filter/:format/:storage/", http.HandlerFunc(handler.Display))
+	m.Get(cfg.Http.Root+"/:filter/:format/:storage/", http.HandlerFunc(request.Display))
 
-	n := negroni.New(xrequestid.New(16), handler.NewLogger())
+	n := negroni.New(xrequestid.New(16), request.NewLogger())
 	n.UseHandler(m)
 	n.Run(fmt.Sprintf(":%d", cfg.Http.Port))
 }
