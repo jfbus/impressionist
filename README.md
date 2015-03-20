@@ -1,6 +1,8 @@
 impressionist
 =============
 
+[![wercker status](https://app.wercker.com/status/a7d76b3660d02a42306368445b74fcdf/s/master "wercker status")](https://app.wercker.com/project/bykey/a7d76b3660d02a42306368445b74fcdf)
+
 A flexible image server written in go, using chained image filters.
 
 Two backend are available : a pure Go backend, and a ImageMagick/GraphicsMagick provider.
