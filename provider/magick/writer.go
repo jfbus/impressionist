@@ -12,7 +12,7 @@ type PNGWriter struct{}
 func (p *PNGWriter) Write(i img.Img, quality int, w io.Writer) error {
 	info := magick.NewInfo()
 	info.SetFormat("PNG")
-	info.SetQuality(quality)
+	info.SetQuality(uint(quality))
 	return i.(*magick.Image).Encode(w, info)
 }
 
@@ -21,6 +21,6 @@ type JPEGWriter struct{}
 func (j *JPEGWriter) Write(i img.Img, quality int, w io.Writer) error {
 	info := magick.NewInfo()
 	info.SetFormat("JPEG")
-	info.SetQuality(quality)
+	info.SetQuality(uint(quality))
 	return i.(*magick.Image).Encode(w, info)
 }

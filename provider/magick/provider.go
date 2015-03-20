@@ -12,7 +12,7 @@ import (
 type Provider struct{}
 
 func (p *Provider) Decode(r io.Reader) (img.Img, error) {
-	i, _, err := magick.Decode(r)
+	i, err := magick.Decode(r)
 	return i, err
 }
 

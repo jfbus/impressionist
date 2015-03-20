@@ -1,6 +1,8 @@
 package magick
 
 import (
+	"math"
+
 	"github.com/jfbus/impressionist/filter"
 	"github.com/jfbus/impressionist/img"
 
@@ -23,26 +25,51 @@ func CropBuilder(parts []string) (filter.Filter, int, error) {
 	if err != nil {
 		return nil, 2, err
 	}
-	return &Crop{magick.Rect(x, y, w, h)}, 2, nil
+	return &Crop{magick.Rect{x, y, uint(w), uint(h)}}, 2, nil
 }
 
 type Resize struct {
 	w, h int
+	mod  byte
 }
 
 func (r *Resize) Apply(i img.Img) (img.Img, error) {
-	return i.(*magick.Image).Resize(r.w, r.h, magick.FLanczos)
+	w, h := r.w, r.h
+	if w != 0 && h != 0 && r.mod == '+' {
+		srcW := i.(*magick.Image).Width()
+		srcH := i.(*magick.Image).Height()
+		ratio := math.Min(float64(h)/float64(srcH), float64(w)/float64(srcW))
+		w = int(math.Max(1.0, math.Floor(float64(srcW)*ratio+0.5)))
+		h = int(math.Max(1.0, math.Floor(float64(srcH)*ratio+0.5)))
+	}
+	if r.mod == '-' {
+		return i.(*magick.Image).CropResize(r.w, r.h, magick.FLanczos, magick.CSCenter)
+	}
+	return i.(*magick.Image).Resize(w, h, magick.FLanczos)
 }
 
 func ResizeBuilder(parts []string) (filter.Filter, int, error) {
 	if len(parts) < 2 {
 		return nil, 1, filter.ErrMissingFilterParameter
 	}
-	w, h, err := filter.ParseDimensions(parts[1])
+	dim := parts[1]
+	mod := dim[len(dim)-1]
+	switch mod {
+	case ' ':
+		mod = '+'
+		fallthrough
+	case '+':
+		fallthrough
+	case '-':
+		dim = dim[:len(dim)-1]
+	default:
+		mod = 0
+	}
+	w, h, err := filter.ParseDimensions(dim)
 	if err != nil {
 		return nil, 2, err
 	}
-	return &Resize{w, h}, 2, nil
+	return &Resize{w, h, mod}, 2, nil
 }
 
 type Grayscale struct{}
