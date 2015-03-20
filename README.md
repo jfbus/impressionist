@@ -5,7 +5,7 @@ A flexible image server written in go, using chained image filters.
 
 Two backend are available : a pure Go backend, and a ImageMagick/GraphicsMagick provider.
 
-Status: dev, things might be broken or will be broken
+Status: alpha
 
 Building the server (pure Go):
 ```
@@ -17,7 +17,7 @@ Building the server (ImageMagick):
 go build -o impressionist server/magick/server.go
 ```
 
-Building the server (GrahicsMagick):
+Building the server (GraphicsMagick):
 ```
 go build -tags gm -o impressionist server/magick/server.go
 ```
