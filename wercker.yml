@@ -11,7 +11,7 @@ build:
         code: |-
           sudo apt-add-repository "deb http://archive.ubuntu.com/ubuntu precise universe"
           sudo apt-get update
-          sudo apt-get install imagemagick giflib
+          sudo apt-get install libmagickcore-dev libgif-dev
     - script:
         name: Go get
         code: go get -v ./...
