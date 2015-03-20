@@ -52,18 +52,10 @@ func ResizeBuilder(parts []string) (filter.Filter, int, error) {
 	if len(parts) < 2 {
 		return nil, 1, filter.ErrMissingFilterParameter
 	}
-	dim := parts[1]
-	mod := dim[len(dim)-1]
-	switch mod {
-	case ' ':
+	mod, dim := filter.ParseModifier(parts[1], " +-")
+	// just in case + is interpreted as a space...
+	if mod == ' ' {
 		mod = '+'
-		fallthrough
-	case '+':
-		fallthrough
-	case '-':
-		dim = dim[:len(dim)-1]
-	default:
-		mod = 0
 	}
 	w, h, err := filter.ParseDimensions(dim)
 	if err != nil {

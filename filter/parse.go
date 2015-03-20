@@ -68,14 +68,22 @@ func ParseDimensions(str string) (int, int, error) {
 		return 0, 0, ErrBadFilterParameter
 	}
 	x, err := strconv.ParseInt(parts[0], 10, 32)
-	if err != nil {
-		log.Warnf("Unable to parse dimensions %s (not an integer)", str)
+	if err != nil || x < 0 {
+		log.Warnf("Unable to parse dimensions %s (not a positive integer)", str)
 		return 0, 0, ErrBadFilterParameter
 	}
 	y, err := strconv.ParseInt(parts[1], 10, 32)
-	if err != nil {
-		log.Warnf("Unable to parse dimensions %s (not an integer)", str)
+	if err != nil || y < 0 {
+		log.Warnf("Unable to parse dimensions %s (not a positive integer)", str)
 		return 0, 0, ErrBadFilterParameter
 	}
 	return int(x), int(y), nil
+}
+
+func ParseModifier(str string, allowed string) (byte, string) {
+	mod := str[len(str)-1]
+	if strings.ContainsRune(allowed, rune(mod)) {
+		return mod, str[:len(str)-1]
+	}
+	return 0, str
 }
