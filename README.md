@@ -3,11 +3,23 @@ impressionist
 
 A flexible image server written in go, using chained image filters.
 
+Two backend are available : a pure Go backend, and a ImageMagick/GraphicsMagick provider.
+
 Status: dev, things might be broken or will be broken
 
-Building the server :
+Building the server (pure Go):
 ```
 go build -o impressionist server/pure/server.go
+```
+
+Building the server (ImageMagick):
+```
+go build -o impressionist server/magick/server.go
+```
+
+Building the server (GrahicsMagick):
+```
+go build -tags gm -o impressionist server/magick/server.go
 ```
 
 Running the server :
@@ -69,11 +81,18 @@ Filters
 -------
 
 * crop : `c,[x]x[y]-[w]x[h]`
-* resize : `s,[w]x[h]` if w or h is zero, image is resized to the other dimension, keeping the same ratio
+* resize : `s,[w]x[h][+|-]`
 * flip : `f,[h|v]` h = horizontal, v = vertical 
 * rotate: `r,[90|180|270]`
 * grayscale: `gs`
 * blur: `b,s` s = float (e.g: 1.0)
+
+Note on resize :
+
+* s,500x100 resizes exactly to 500x100
+* s,500x0 and s,0x100 resize to a width of 500px (height of 100px), keeping the ratio
+* s,500x100+ resizes to the maximum size within the specified dimensions, keeping the ratio
+* s,500x100- resizes to the minimum dimention above the specified dimensions, keeping the ratio, and crops to 500x100
 
 Predefined filters can be configured.
 
@@ -91,6 +110,18 @@ With the following configuration :
 ```
 
 `/impressionist/small/:format/:storage/:path` is translated to `/impressionist/s,100x0/:format/:storage/:path`.
+
+Filters supported by each backend :
+
+|Filter|pure Go|Magick|
+|------|-------|------|
+|crop|yes|yes|
+|resize|yes|yes|
+|flip|yes|yes|
+|rotate|yes|no|
+|grayscale|yes|yes|
+|blur|yes|no|
+
 
 Formats
 -------
