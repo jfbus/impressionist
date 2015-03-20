@@ -2,6 +2,7 @@ package pure
 
 import (
 	"image"
+	"math"
 	"strconv"
 
 	"github.com/jfbus/impressionist/filter"
@@ -31,21 +32,57 @@ func CropBuilder(parts []string) (filter.Filter, int, error) {
 
 type Resize struct {
 	w, h int
+	mod  byte
 }
 
 func (r *Resize) Apply(i img.Img) (img.Img, error) {
-	return imaging.Resize(i.(image.Image), r.w, r.h, imaging.Lanczos), nil
+	w, h, crop := r.w, r.h, false
+	if w != 0 && h != 0 && r.mod != 0 {
+		srcW := i.(image.Image).Bounds().Max.X
+		srcH := i.(image.Image).Bounds().Max.Y
+		var ratio float64
+		switch r.mod {
+		case '+':
+			ratio = math.Min(float64(h)/float64(srcH), float64(w)/float64(srcW))
+		case '-':
+			ratio = math.Max(float64(h)/float64(srcH), float64(w)/float64(srcW))
+			crop = true
+		}
+		w = int(math.Max(1.0, math.Floor(float64(srcW)*ratio+0.5)))
+		h = int(math.Max(1.0, math.Floor(float64(srcH)*ratio+0.5)))
+	}
+	n := imaging.Resize(i.(image.Image), w, h, imaging.Lanczos)
+	if crop {
+		tmpW := n.Bounds().Max.X
+		tmpH := n.Bounds().Max.Y
+		rect := image.Rectangle{image.Point{(tmpW - r.w) / 2, (tmpH - r.h) / 2}, image.Point{(tmpW + r.w) / 2, (tmpH + r.h) / 2}}
+		return imaging.Crop(n, rect), nil
+	}
+	return n, nil
 }
 
 func ResizeBuilder(parts []string) (filter.Filter, int, error) {
 	if len(parts) < 2 {
 		return nil, 1, filter.ErrMissingFilterParameter
 	}
-	w, h, err := filter.ParseDimensions(parts[1])
+	dim := parts[1]
+	mod := dim[len(dim)-1]
+	switch mod {
+	case ' ':
+		mod = '+'
+		fallthrough
+	case '+':
+		fallthrough
+	case '-':
+		dim = dim[:len(dim)-1]
+	default:
+		mod = 0
+	}
+	w, h, err := filter.ParseDimensions(dim)
 	if err != nil {
 		return nil, 2, err
 	}
-	return &Resize{w, h}, 2, nil
+	return &Resize{w, h, mod}, 2, nil
 }
 
 type Apply struct {
