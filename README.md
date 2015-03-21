@@ -5,7 +5,7 @@ impressionist
 
 A flexible image server written in go, using chained image filters.
 
-Two backend are available : a pure Go backend, and a ImageMagick/GraphicsMagick provider.
+Two backend are available : a pure Go backend, and a ImageMagick/GraphicsMagick backend.
 
 Status: alpha
 
@@ -18,6 +18,8 @@ Building the server (ImageMagick):
 ```
 go build -o impressionist server/magick/server.go
 ```
+
+On ubuntu, you will need to install `libmagickcore-dev` and `libgif-dev`
 
 Building the server (GraphicsMagick):
 ```
