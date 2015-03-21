@@ -96,7 +96,7 @@ Note on resize :
 * `s,500x100` resizes exactly to 500x100
 * `s,500x0` and `s,0x100` resize to a width of 500px (height of 100px), keeping the ratio
 * `s,500x100+` resizes to the maximum size within the specified dimensions, keeping the ratio
-* `s,500x100-` resizes to the minimum dimention above the specified dimensions, keeping the ratio, and crops to 500x100
+* `s,500x100-` resizes to the minimum dimension above the specified dimensions, keeping the ratio, and crops to 500x100
 
 Predefined filters can be configured.
 
